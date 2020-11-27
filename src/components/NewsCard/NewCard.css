@@ -1,0 +1,209 @@
+.new-card {
+  border-radius: 10px;
+  background-color: white;
+  position: relative;
+  width: 100%;
+}
+
+.new-card__image {
+  border-radius: 10px 10px 0 0;
+  margin-bottom: 20px;
+  width: 100%;
+}
+
+.new-card__date {
+  margin: 0;
+  font-family: 'Source Sans Pro', 'Lucida Sans Unicode';
+  font-style: normal;
+  font-weight: normal;
+  font-size: 18px;
+  line-height: 24px;
+  color: #B6BCBF;
+  text-align: left;
+  margin-left: 24px;
+  margin-right: 24px;
+  margin-bottom: 12px;
+}
+
+.new-card__title {
+  margin: 0;
+  font-family: 'Roboto Slab', 'Lucida Sans Unicode';
+  font-style: normal;
+  font-weight: normal;
+  font-size: 26px;
+  line-height: 30px;
+  color: #1A1B22;
+  text-align: left;
+  margin: 0 24px 16px 24px;
+}
+
+.new-card__text {
+  margin: 0;
+  font-family: 'Roboto', 'Lucida Sans Unicode';
+  font-style: normal;
+  font-weight: normal;
+  font-size: 16px;
+  line-height: 22px;
+  color: #1A1B22;
+  text-align: left;
+  margin: 0 24px 10px 24px;
+}
+
+.new-card__source {
+  margin: 0;
+  font-family: 'Roboto Slab', 'Lucida Sans Unicode';
+  font-style: normal;
+  font-weight: bold;
+  font-size: 16px;
+  line-height: 20px;
+  letter-spacing: 0.4px;
+  text-transform: uppercase;
+  color: #B6BCBF;
+  text-align: left;
+  margin-left: 24px;
+  margin-right: 24px;
+  margin-bottom: 18px;
+}
+
+.new-card__button {
+  position: absolute;
+  width: 40px;
+  height: 40px;
+  right: 24px;
+  top: 24px;
+  border-radius: 8px;
+  background: #FFFFFF;
+  border: none;
+  outline: none;
+  background-image: url("../../images/bookmark.svg");
+  background-repeat: no-repeat;
+  background-position: center;
+}
+
+.new-card__button_marked {
+  background-image: url("../../images/bookmark-market.png");
+}
+
+.new-card__button:hover {
+  background-image: url("../../images/Rectangle\ 8.svg");
+  cursor: pointer;
+}
+
+.new-card__button_delete {
+  background-image: url("../../images/delete-button.svg");
+}
+
+.new-card__button_delete.new-card__button:hover {
+  background-image: url("../../images/delete-button_hover.svg");
+}
+
+.new-card__warning {
+  margin: 0;
+  position: absolute;
+  background: #FFFFFF;
+  padding-left: 12px;
+  padding-right: 12px;
+  height: 26px;
+  right: 69px;
+  top: 24px;
+  font-family: 'Roboto', 'Lucida Sans Unicode';
+  font-style: normal;
+  font-weight: 500;
+  font-size: 10px;
+  line-height: 12px;
+  color: #000000;
+  border-radius: 10px;
+  text-align: center;
+  padding-top: 14px;
+  display: none;
+}
+
+.new-card__button:hover+.new-card__warning {
+  display: block;
+}
+
+.new-card__tip {
+  margin: 0;
+  position: absolute;
+  background: #FFFFFF;
+  padding-left: 12px;
+  padding-right: 12px;
+  height: 26px;
+  right: 69px;
+  top: 24px;
+  font-family: 'Roboto', 'Lucida Sans Unicode';
+  font-style: normal;
+  font-weight: 500;
+  font-size: 10px;
+  line-height: 12px;
+  color: #000000;
+  border-radius: 10px;
+  text-align: center;
+  padding-top: 14px;
+  display: none;
+}
+
+.new-card__button:hover+.new-card__tip {
+  display: block;
+}
+
+.new-card__key {
+  margin: 0;
+  padding: 0;
+  padding-left: 12px;
+  padding-right: 12px;
+  position: absolute;
+  background: #FFFFFF;
+  height: 26px;
+  top: 24px;
+  left: 24px;
+  font-family: 'Roboto', 'Lucida Sans Unicode';
+  font-style: normal;
+  font-weight: 500;
+  font-size: 14px;
+  line-height: 12px;
+  text-align: center;
+  color: #000000;
+  border-radius: 10px;
+  text-align: center;
+  padding-top: 14px;
+}
+
+@media screen and (max-width:1000px) {
+  .new-card__image {
+    margin-bottom: 16px;
+  }
+  .new-card__date {
+    margin-left: 16px;
+    margin-right: 16px;
+  }
+  .new-card__title {
+    margin: 0 16px 10px 16px;
+    font-size: 22px;
+    line-height: 24px;
+  }
+  .new-card__text {
+    margin: 0 16px 12px 16px;
+  }
+  .new-card__source {
+    margin: 0 16px 16px 16px;
+  }
+  .new-card__button:hover+.new-card__warning {
+    display: none;
+  }
+  .new-card__button:hover+.new-card__tip {
+    display: none;
+  }
+}
+
+@media screen and (max-width:660px) {
+  .new-card__date {
+    margin-bottom: 10px;
+  }
+  .new-card__title {
+    line-height: 28px;
+  }
+  .new-card__text {
+    margin-bottom: 8px;
+  }
+}
