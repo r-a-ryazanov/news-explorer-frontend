@@ -1,0 +1,234 @@
+.popup {
+  position: fixed;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.popup__container {
+  width: 362px;
+  padding: 34px 36px 28px 34px;
+  border-radius: 16px;
+  background-color: white;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+}
+
+.popup__title {
+  padding: 0;
+  margin: 0;
+  margin-bottom: 22px;
+  max-width: 315px;
+  font-family: 'Roboto', 'Lucida Sans Unicode';
+  font-style: normal;
+  font-weight: 900;
+  font-size: 24px;
+  line-height: 28px;
+  color: #1A1B22;
+}
+
+.popup__close-button {
+  position: absolute;
+  border: 0;
+  width: 40px;
+  height: 40px;
+  left: calc(100% + 6px);
+  top: -46px;
+  background: url(../../images/CloseIcon.svg) rgba(0, 0, 0, 0);
+  background-size: 100%;
+  transition: opacity 1s linear 0s;
+  outline: none;
+}
+
+.popup__close-button:hover {
+  opacity: 0.6;
+  cursor: pointer;
+}
+
+.popup__label {
+  margin: 0;
+  padding: 0;
+  margin-bottom: 9px;
+  font-family: 'Inter', 'Lucida Sans Unicode';
+  font-style: normal;
+  font-weight: normal;
+  font-size: 12px;
+  line-height: 15px;
+  color: #2F71E5;
+}
+
+.popup__input {
+  border: none;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.2);
+  outline: none;
+  margin: 0;
+  padding: 0;
+  padding-bottom: 11px;
+  margin-bottom: 31px;
+  font-family: 'Inter', 'Lucida Sans Unicode';
+  font-style: normal;
+  font-weight: normal;
+  font-size: 14px;
+  line-height: 17px;
+  color: #000000;
+}
+
+.popup__apply-button {
+  margin: 0;
+  margin-top: 12px;
+  margin-bottom: 16px;
+  height: 64px;
+  outline: none;
+  border: none;
+  border-radius: 100px;
+  background: #2F71E5;
+  font-family: 'Roboto', 'Lucida Sans Unicode';
+  font-style: normal;
+  font-weight: 500;
+  font-size: 18px;
+  line-height: 24px;
+  color: #FFFFFF;
+}
+
+.popup__apply-button:hover {
+  background: #347EFF;
+  cursor: pointer;
+}
+
+.popup__apply-button_disabled {
+  background: #E6E8EB;
+  color: #B6BCBF;
+  transition: none;
+}
+
+.popup__apply-button_disabled:hover {
+  cursor: default;
+  background: #E6E8EB;
+}
+
+.popup__subscript {
+  font-family: 'Inter', 'Lucida Sans Unicode';
+  font-style: normal;
+  font-weight: normal;
+  font-size: 14px;
+  line-height: 17px;
+  text-align: center;
+  color: #000000;
+  margin: 0;
+  padding: 0;
+}
+
+.popup__subscript-button {
+  margin: 0;
+  padding: 0;
+  border: none;
+  background: none;
+  color: #2F71E5;
+}
+
+.popup__subscript-button:hover {
+  cursor: pointer;
+}
+
+.popup__success-button {
+  margin: 0;
+  padding: 0;
+  font-family: 'Inter', 'Lucida Sans Unicode';
+  font-style: normal;
+  font-weight: normal;
+  font-size: 18px;
+  line-height: 22px;
+  color: #2F71E5;
+  margin-top: -8px;
+  margin-bottom: 23px;
+}
+
+.popup__success-button:hover {
+  cursor: pointer;
+}
+
+.popup__input-error {
+  margin-top: -28px;
+  margin-bottom: 14px;
+  font-family: 'Inter', 'Lucida Sans Unicode';
+  font-style: normal;
+  font-weight: normal;
+  font-size: 12px;
+  line-height: 15px;
+  color: #FF0000;
+  display: none;
+}
+
+.popup__error {
+  font-family: 'Inter', 'Lucida Sans Unicode';
+  font-style: normal;
+  font-weight: normal;
+  font-size: 12px;
+  line-height: 15px;
+  color: #FF0000;
+  margin: 0;
+  padding: 0;
+  margin: auto;
+  display: none;
+}
+
+@media screen and (max-width:660px) {
+  .popup__container {
+    width: calc(100% - 32px);
+    padding: 16px 16px 0 16px;
+    border-radius: 16px 16px 0 0;
+    position: fixed;
+    left: 0;
+    top: 57px;
+    bottom: 0;
+  }
+  .popup__title {
+    max-width: 158px;
+  }
+  .popup__close-button {
+    left: calc(100% - 60px);
+  }
+  .popup__error {
+    margin-top: -14px;
+    margin-bottom: 15px;
+  }
+  .popup__apply-button {
+    margin-top: -7px;
+  }
+  .popup__subscript {
+    font-family: Inter;
+    font-style: normal;
+    font-weight: normal;
+    font-size: 14px;
+    line-height: 17px;
+    text-align: center;
+    color: #000000;
+    margin: 0;
+    padding: 0;
+  }
+  .popup__subscript-button {
+    margin: 0;
+    padding: 0;
+    border: none;
+    background: none;
+    color: #2F71E5;
+  }
+  .popup__success-button {
+    margin: 0;
+    padding: 0;
+    font-family: Inter;
+    font-style: normal;
+    font-weight: normal;
+    font-size: 18px;
+    line-height: 22px;
+    color: #2F71E5;
+    margin-top: -8px;
+    margin-bottom: 23px;
+  }
+}

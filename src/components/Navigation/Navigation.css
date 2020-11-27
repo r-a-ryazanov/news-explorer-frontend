@@ -1,0 +1,134 @@
+.navigation {
+  display: flex;
+  align-items: center;
+}
+
+.navigation__link {
+  background: none;
+  outline: none;
+  border: none;
+  margin: 0;
+  padding: 30px 0 26px 0;
+  font-family: 'Roboto', 'Lucida Sans Unicode';
+  font-style: normal;
+  font-weight: 500;
+  font-size: 18px;
+  line-height: 24px;
+  color: #B6BCBF;
+  margin-right: 33px;
+  text-decoration: none;
+}
+
+.navigation__link_active {
+  border-bottom: solid white 3px;
+  color: #FFFFFF;
+}
+
+.navigation__link:hover {
+  cursor: pointer;
+}
+
+.navigation__link_dark {
+  color: #1A1B22;
+}
+
+.navigation__link_active.navigation__link_dark {
+  border-bottom: solid #1A1B22 3px;
+}
+
+.navigation__auth-button {
+  padding: 0;
+  margin: 0;
+  outline: none;
+  border: none;
+  padding: 12px 19px 12px 19px;
+  background: none;
+  border: 1px solid #FFFFFF;
+  box-sizing: border-box;
+  border-radius: 100px;
+  font-family: 'Roboto', 'Lucida Sans Unicode';
+  font-style: normal;
+  font-weight: 500;
+  font-size: 18px;
+  line-height: 24px;
+  display: flex;
+  align-items: center;
+  text-align: center;
+  color: #FFFFFF;
+}
+
+.navigation__auth-button:hover {
+  cursor: pointer;
+}
+
+.navigation__auth-button_dark {
+  color: #1A1B22;
+  border: 1px solid #1A1B22;
+}
+
+.navigation__out-logo {
+  width: 24px;
+  height: 24px;
+  margin-left: 2px;
+  background-image: url('../../images/logout.svg');
+  display: none;
+}
+
+.navigation__out-logo_visible {
+  display: block;
+}
+
+.navigation__out-logo_dark {
+  background-image: url('../../images/logout_dark.svg');
+}
+
+@media screen and (max-width:1000px) {
+  .navigation__link {
+    padding: 22px 0 20px 0;
+    font-size: 16px;
+  }
+  .navigation__auth-button {
+    padding: 8px 15px 8px 15px;
+    font-size: 16px;
+  }
+}
+
+@media screen and (max-width:660px) {
+  .navigation {
+    position: absolute;
+    padding-top: 20px;
+    left: 0px;
+    right: 0px;
+    top: 58px;
+    background: #1A1B22;
+    flex-direction: column;
+    align-items: start;
+    z-index: 1;
+    display: none;
+  }
+  .navigation__link {
+    line-height: 60px;
+    color: #FFFFFF;
+    margin: 0 0 0 16px;
+    padding: 0;
+    text-align: left;
+    border: none;
+  }
+  .navigation__auth-button {
+    border: 1px solid #FFFFFF;
+    color: #FFFFFF;
+    margin: 20px 0 24px 0;
+    align-self: center;
+    width: calc(100% *288/320);
+    display: flex;
+    align-items: center;
+    justify-content: center
+  }
+  .navigation__out-logo_dark {
+    background-image: url('../../images/logout.svg');
+  }
+}
+
+.navigation_onmenu {
+  display: flex;
+}
