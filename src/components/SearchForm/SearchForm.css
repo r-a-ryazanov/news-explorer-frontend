@@ -68,6 +68,18 @@
   background: #2A65CC;
 }
 
+.search-form__submit_disabled {
+  background: #E6E8EB;
+  color: #B6BCBF;
+  transition: none;
+}
+
+.search-form__submit_disabled:hover {
+  cursor: default;
+  background: #E6E8EB;
+}
+
+
 @media screen and (max-width:1000px) {
   .search-form {
     width: calc(100%*452/768);

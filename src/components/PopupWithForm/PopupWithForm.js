@@ -1,5 +1,6 @@
 import React, { Children } from "react";
 import "./PopupWithForm.css";
+
 //---------------Компонент возвращает разметку всплывающего окна------------------------------
 function PopupWithForm({
   isOpen,
