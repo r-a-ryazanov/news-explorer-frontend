@@ -1,8 +1,8 @@
-import React from 'react';
-import './Preloader.css';
+import React from "react";
+import "./Preloader.css";
 //---------------Компонент возвращает разметку прелоудера------------------------------
-function Preloader({isVisible}) {
-  if(!isVisible) return null;
+function Preloader({ isVisible }) {
+  if (!isVisible) return null;
   return (
     <div className="preloader">
       <i className="preloader__circle"></i>
