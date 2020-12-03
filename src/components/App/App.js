@@ -8,6 +8,7 @@ import SignUpPopup from "../SignUpPopup/SignUpPopup.js";
 import SignInPopup from "../SignInPopup/SignInPopup.js";
 import SuccessPopup from "../SuccessPopup/SuccessPopup.js";
 import newsApi from "../../utils/NewsApi.js";
+import mainApi from "../../utils/MainApi.js";
 //---------------Компонент возвращает разметку всего ресурса------------------------------
 function App() {
   const [loggedIn, setloggedIn] = React.useState(false);
@@ -17,16 +18,25 @@ function App() {
   const [isSuccessPopupOpen, setIsSuccessPopupOpen] = React.useState(false);
   const [isPopupOpen, setIsPopupOpen] = React.useState(false);
   const [newsCardList, setNewsCardList] = React.useState([]);
+  const [savedNewsCardList, setSavedNewsCardList] = React.useState([]);
+  const [mainApiError, setMainApiError] = React.useState("");
   const [isLoading, setIsLoading] = React.useState(false);
-  const [isError, setIsError] = React.useState(false);
-  const [isNotFound, setIsNotFound] = React.useState(false);
+  const [isAuthLoading, setIsAuthLoading] = React.useState(false);
+  const [isNewsApiError, setIsNewsApiError] = React.useState(false);
+  const [isNewsApiNotFound, setIsNewsApiNotFound] = React.useState(false);
   const [isEmptySearchInput, setIsEmptySearchInput] = React.useState(false);
   //---------------Функцмя закрытия всех всплывающих окон------------------------------
+  function handleError(err) {
+    if (err.message.search("celebrate") !== -1)
+      return err.validation.body.message;
+    return err.message;
+  }
   function closeAllPopup() {
     setIsSignUpPopupOpen(false);
     setIsSignInPopupOpen(false);
     setIsSuccessPopupOpen(false);
     setIsPopupOpen(false);
+    setMainApiError("");
   }
 
   //---------------Функция-обработчик нажатия на Esc------------------------------
@@ -61,15 +71,41 @@ function App() {
     setIsPopupOpen(true);
   }
   //---------------Функция регистрации пользователя------------------------------
-  function handleRegisterUser() {
-    closeAllPopup();
-    setIsSuccessPopupOpen(true);
-    setIsPopupOpen(true);
+  function handleRegisterUser(registerData) {
+    setMainApiError("");
+    setIsAuthLoading(true);
+    mainApi
+      .registerUser(registerData)
+      .then(() => {
+        closeAllPopup();
+        setIsSuccessPopupOpen(true);
+        setIsPopupOpen(true);
+        setIsAuthLoading(false);
+      })
+      .catch((err) => {
+        err.then((res) => {
+          setMainApiError(handleError(res));
+          setIsAuthLoading(false);
+        });
+      });
   }
   //---------------Функция авторизации пользователя------------------------------
   function handleSignInUser(loginData) {
-    setloggedIn(true);
-    closeAllPopup();
+    setMainApiError("");
+    setIsAuthLoading(true);
+    mainApi
+      .loginUser(loginData)
+      .then(() => {
+        setloggedIn(true);
+        closeAllPopup();
+        setIsAuthLoading(false);
+      })
+      .catch((err) => {
+        err.then((res) => {
+          setMainApiError(handleError(res));
+          setIsAuthLoading(false);
+        });
+      });
   }
   //---------------Функция выхода пользователя------------------------------
   function handleLogOutUser() {
@@ -85,6 +121,11 @@ function App() {
         .classList.toggle("new-card__button_marked");
     }
   }
+  function hasSavedNews(link) {
+    return savedNewsCardList.some((item) => {
+      return item.link === link;
+    });
+  }
   //---------------Функция обработки клика по кнопке "Искать"------------------------------
   function handleCearchClick(searchText) {
     if (searchText === "") {
@@ -94,15 +135,15 @@ function App() {
       const newArray = [];
       setNewsCardList([]);
       setIsLoading(true);
-      setIsError(false);
-      setIsNotFound(false);
+      setIsNewsApiError(false);
+      setIsNewsApiNotFound(false);
       newsApi
         .getNewsCardList(searchText)
         .finally(() => {
           setIsLoading(false);
         })
         .then((res) => {
-          if (res.articles.length === 0) setIsNotFound(true);
+          if (res.articles.length === 0) setIsNewsApiNotFound(true);
           res.articles.forEach((item) => {
             const date = new Date(item.publishedAt);
             newArray.push({
@@ -116,14 +157,18 @@ function App() {
               source: item.source.name,
               link: item.url,
               image: item.urlToImage,
+              isSaved: hasSavedNews(item.url),
             });
           });
           setNewsCardList(newArray);
         })
-        .catch((err) => {
-          setIsError(true);
+        .catch(() => {
+          setIsNewsApiError(true);
         });
     }
+  }
+  function onCardClick(link) {
+    window.open(link, "_blank");
   }
   return (
     <div className="App">
@@ -138,10 +183,11 @@ function App() {
             handleCearchClick={handleCearchClick}
             newsCardList={newsCardList}
             isLoading={isLoading}
-            isError={isError}
-            isNotFound={isNotFound}
+            isError={isNewsApiError}
+            isNotFound={isNewsApiNotFound}
             isEmptySearchInput={isEmptySearchInput}
             setIsEmptySearchInput={setIsEmptySearchInput}
+            onCardClick={onCardClick}
           />
         </Route>
         <Route path="/saved-news">
@@ -160,17 +206,21 @@ function App() {
         handlesubscriptButton={handleLoginClick}
         onSignUp={handleRegisterUser}
         handleCloseButton={closeAllPopup}
+        mainApiError={mainApiError}
+        isAuthLoading={isAuthLoading}
       />
       <SignInPopup
         isOpen={isSignInPopupOpen}
         handlesubscriptButton={handleAuthClick}
         onSignIn={handleSignInUser}
         handleCloseButton={closeAllPopup}
+        mainApiError={mainApiError}
       />
       <SuccessPopup
         isOpen={isSuccessPopupOpen}
         handlesubscriptButton={handleLoginClick}
         handleCloseButton={closeAllPopup}
+        isAuthLoading={isAuthLoading}
       />
     </div>
   );

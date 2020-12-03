@@ -8,6 +8,8 @@ function SignUpPopup({
   handleCloseButton,
   handlesubscriptButton,
   onSignUp,
+  mainApiError,
+  isAuthLoading,
 }) {
   const [email, setEmail] = React.useState("");
   const [password, setPassword] = React.useState("");
@@ -22,7 +24,7 @@ function SignUpPopup({
   const [nameValidationMessage, setNameValidationMessage] = React.useState("");
   const [isButtonDisabled, setIsButtonDisabled] = React.useState(true);
 
-  function closePopup(){
+  function closePopup() {
     setEmail("");
     setPassword("");
     setUserName("");
@@ -35,7 +37,7 @@ function SignUpPopup({
   //---------------Функция-обработчик клика на кнопку "Зарегистрироваться"------------------------------
   function handleSubmit(e) {
     e.preventDefault();
-    onSignUp({ email, password, userName });
+    onSignUp({ email, password, name: userName });
   }
   //---------------Функция-обработчик ввода email------------------------------
   function handleChangeEmail(e) {
@@ -86,6 +88,7 @@ function SignUpPopup({
         className="popup__input"
         value={email}
         onChange={handleChangeEmail}
+        disabled={isAuthLoading}
       />
       <span
         className={`popup__input-error ${
@@ -105,10 +108,16 @@ function SignUpPopup({
         className="popup__input"
         value={password}
         onChange={handleChangePassword}
+        disabled={isAuthLoading}
       />
-      <span className={`popup__input-error ${
+      <span
+        className={`popup__input-error ${
           passwordValidationMessage !== "" && "popup__input-error_visible"
-      }`} id="password-input-error">{passwordValidationMessage}</span>
+        }`}
+        id="password-input-error"
+      >
+        {passwordValidationMessage}
+      </span>
       <p className="popup__label">Имя</p>
       <input
         type="text"
@@ -119,12 +128,28 @@ function SignUpPopup({
         className="popup__input"
         value={userName}
         onChange={handleChangeUserName}
+        disabled={isAuthLoading}
       />
-      <span className={`popup__input-error ${
+      <span
+        className={`popup__input-error ${
           nameValidationMessage !== "" && "popup__input-error_visible"
-      }`} id="name-input-error">{nameValidationMessage}</span>
-      <span className="popup__error" id="input-error"></span>
-      <button type="submit" className={`popup__apply-button ${isButtonDisabled&&"popup__apply-button_disabled"}`} disabled={isButtonDisabled}>
+        }`}
+        id="name-input-error"
+      >
+        {nameValidationMessage}
+      </span>
+      {mainApiError !== "" && (
+        <span className="popup__error" id="input-error">
+          {mainApiError}
+        </span>
+      )}
+      <button
+        type="submit"
+        className={`popup__apply-button ${
+          isButtonDisabled && "popup__apply-button_disabled"
+        }`}
+        disabled={isButtonDisabled}
+      >
         Зарегистрироваться
       </button>
       <p className="popup__subscript">

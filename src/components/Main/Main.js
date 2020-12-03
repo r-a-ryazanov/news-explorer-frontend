@@ -21,6 +21,7 @@ function Main({
   isNotFound,
   isEmptySearchInput,
   setIsEmptySearchInput,
+  onCardClick,
 }) {
   const [backgroundHeight, setbackgroundHeight] = React.useState("auto");
   function setBackgroundHeight() {
@@ -64,6 +65,7 @@ function Main({
           onCardButtonClick={onCardButtonClick}
           loggedIn={loggedIn}
           cards={newsCardList}
+          onCardClick={onCardClick}
         />
       )}
       <About />

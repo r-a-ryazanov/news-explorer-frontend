@@ -1,19 +1,19 @@
 import React from "react";
 import "./NewCard.css";
 //---------------Компонент возвращает разметку новостной карточки------------------------------
-function NewCard({ card, onCardButtonClick, loggedIn }) {
+function NewCard({ card, onCardButtonClick, loggedIn, onCardClick, id }) {
+  if (!card._id) card._id = id;
+
   function handleButtonClick() {
     onCardButtonClick(card);
   }
+  function handleCardClick(evt) {
+    if (!evt.target.classList.contains("new-card__button"))
+      onCardClick(card.link);
+  }
   return (
-    <a
-      className="new-card"
-      id={card._id}
-      href={card.link}
-      target="_blank"
-      rel="noreferrer"
-    >
-      <img className="new-card__image" alt="Иллюстрация" src={card.image}/>
+    <div className="new-card" id={card._id} onClick={handleCardClick}>
+      <img className="new-card__image" alt="Иллюстрация" src={card.image} />
       <p className="new-card__date">{card.date}</p>
       <h3 className="new-card__title">{card.title}</h3>
       <p className="new-card__text">{card.text}</p>
@@ -22,6 +22,10 @@ function NewCard({ card, onCardButtonClick, loggedIn }) {
         className={`new-card__button ${
           window.location.pathname === "/saved-news" &&
           "new-card__button_delete"
+        } ${
+          window.location.pathname === "/" &&
+          card.isSaved &&
+          "new-card__button_marked"
         }`}
         onClick={handleButtonClick}
       />
@@ -34,7 +38,7 @@ function NewCard({ card, onCardButtonClick, loggedIn }) {
       {window.location.pathname === "/saved-news" && (
         <p className="new-card__key">{card.keys[0]}</p>
       )}
-    </a>
+    </div>
   );
 }
 export default NewCard;
