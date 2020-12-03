@@ -3,6 +3,11 @@
   background-color: white;
   position: relative;
   width: 100%;
+  text-decoration: none;
+}
+
+.new-card:hover {
+  cursor: pointer;
 }
 
 .new-card__image {

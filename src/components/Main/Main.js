@@ -5,7 +5,8 @@ import SearchForm from "../SearchForm/SearchForm.js";
 import NewCardList from "../NewsCardList/NewCardList.js";
 import About from "../About/About.js";
 import Preloader from "../Preloader/Preloader.js";
-import cards from "../../utils/cards.js";
+import Tips from "../Tips/Tips.js";
+import backgroundImage from "../../images/georgia-de-lotz--UsJoNxLaNo-unsplash.png";
 //---------------Компонент возвращает разметку главной страницы------------------------------
 function Main({
   loggedIn,
@@ -13,22 +14,56 @@ function Main({
   handleLogOutUser,
   onCardButtonClick,
   isPopupOpen,
+  handleCearchClick,
+  newsCardList,
+  isLoading,
+  isError,
+  isNotFound,
+  isEmptySearchInput,
+  setIsEmptySearchInput,
 }) {
+  const [backgroundHeight, setbackgroundHeight] = React.useState("auto");
+  function setBackgroundHeight() {
+    setbackgroundHeight(
+      `${
+        document.querySelector(".header").offsetHeight +
+        document.querySelector(".search-section").offsetHeight
+      }px`
+    );
+    document.querySelector(
+      ".main__background-image"
+    ).style.height = backgroundHeight;
+  }
+  React.useEffect(() => {
+    setBackgroundHeight();
+    setBackgroundHeight();
+    window.addEventListener("resize", setBackgroundHeight);
+    return () => {
+      window.removeEventListener("resize", setBackgroundHeight);
+    };
+  });
   return (
     <div className="main">
+      <img className="main__background-image" src={backgroundImage} alt="Фон" />
       <Header
         handleLoginButton={handleLoginClick}
         handleLogOutButton={handleLogOutUser}
         loggedIn={loggedIn}
         isPopupOpen={isPopupOpen}
       />
-      <SearchForm />
-      <Preloader isVisible={true} />
-      {cards.length > 0 && (
+      <SearchForm
+        handleSearchClick={handleCearchClick}
+        isError={isEmptySearchInput}
+        setIsEmptySearchInput={setIsEmptySearchInput}
+        isLoading={isLoading}
+      />
+      {isLoading && <Preloader />}
+      {(isError || isNotFound) && <Tips isError={isError} />}
+      {newsCardList && newsCardList.length > 0 && (
         <NewCardList
           onCardButtonClick={onCardButtonClick}
           loggedIn={loggedIn}
-          cards={cards}
+          cards={newsCardList}
         />
       )}
       <About />

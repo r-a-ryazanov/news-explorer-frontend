@@ -1,20 +1,16 @@
 import React from "react";
 import "./SearchForm.css";
-import { toggleButtonState } from "../../utils/formValidator.js";
 //---------------Компонент возвращает разметку секции с поиском новостей------------------------------
-function SearchForm() {
-  const [isButtonDisabled, setIsButtonDisabled] = React.useState(true);
+function SearchForm({handleSearchClick, isError, setIsEmptySearchInput, isLoading}) {
   const [searchText, setSearchText] = React.useState("");
   //---------------Функция-обработчик клика на кнопку "Искать"------------------------------
   function handleSubmit(e) {
-    e.preventDefault();
+    e.preventDefault();   
+    handleSearchClick(searchText);
   }
   function handleChangeSearchText(e) {
     setSearchText(e.target.value);
-    toggleButtonState(
-      document.querySelector(".search-form"),
-      setIsButtonDisabled
-    );
+    if(e.target.value !== "") setIsEmptySearchInput(false);
   }
   return (
     <section className="search-section" onSubmit={handleSubmit}>
@@ -24,14 +20,18 @@ function SearchForm() {
           Находите самые свежие статьи на любую тему и сохраняйте в своём личном
           кабинете.
         </h3>
+        {isError&&<p className="search-form__error">Нужно ввести ключевое слово</p>}
         <input
           className="search-form__input"
-          required
           value={searchText}
           onChange={handleChangeSearchText}
+          placeholder="Введите тему новости"
+          disabled = {isLoading}
         />
-        <button type="submit" className={`search-form__submit ${isButtonDisabled&&"search-form__submit_disabled"}`} disabled={isButtonDisabled}>
+        
+        <button type="submit" className="search-form__submit">
           Искать
+          <p></p>
         </button>
       </form>
     </section>

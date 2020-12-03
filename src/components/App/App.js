@@ -7,6 +7,7 @@ import Footer from "../Footer/Footer.js";
 import SignUpPopup from "../SignUpPopup/SignUpPopup.js";
 import SignInPopup from "../SignInPopup/SignInPopup.js";
 import SuccessPopup from "../SuccessPopup/SuccessPopup.js";
+import newsApi from "../../utils/NewsApi.js";
 //---------------Компонент возвращает разметку всего ресурса------------------------------
 function App() {
   const [loggedIn, setloggedIn] = React.useState(false);
@@ -15,6 +16,11 @@ function App() {
   const [isSignInPopupOpen, setIsSignInPopupOpen] = React.useState(false);
   const [isSuccessPopupOpen, setIsSuccessPopupOpen] = React.useState(false);
   const [isPopupOpen, setIsPopupOpen] = React.useState(false);
+  const [newsCardList, setNewsCardList] = React.useState([]);
+  const [isLoading, setIsLoading] = React.useState(false);
+  const [isError, setIsError] = React.useState(false);
+  const [isNotFound, setIsNotFound] = React.useState(false);
+  const [isEmptySearchInput, setIsEmptySearchInput] = React.useState(false);
   //---------------Функцмя закрытия всех всплывающих окон------------------------------
   function closeAllPopup() {
     setIsSignUpPopupOpen(false);
@@ -22,6 +28,7 @@ function App() {
     setIsSuccessPopupOpen(false);
     setIsPopupOpen(false);
   }
+
   //---------------Функция-обработчик нажатия на Esc------------------------------
   function handleEscClose(evt) {
     if (evt.key === "Escape") closeAllPopup();
@@ -78,6 +85,46 @@ function App() {
         .classList.toggle("new-card__button_marked");
     }
   }
+  //---------------Функция обработки клика по кнопке "Искать"------------------------------
+  function handleCearchClick(searchText) {
+    if (searchText === "") {
+      setIsEmptySearchInput(true);
+    } else {
+      setIsEmptySearchInput(false);
+      const newArray = [];
+      setNewsCardList([]);
+      setIsLoading(true);
+      setIsError(false);
+      setIsNotFound(false);
+      newsApi
+        .getNewsCardList(searchText)
+        .finally(() => {
+          setIsLoading(false);
+        })
+        .then((res) => {
+          if (res.articles.length === 0) setIsNotFound(true);
+          res.articles.forEach((item) => {
+            const date = new Date(item.publishedAt);
+            newArray.push({
+              keyword: searchText,
+              title: item.title,
+              text: item.description,
+              date: `${date.toLocaleString("ru-Ru", {
+                day: "numeric",
+                month: "long",
+              })}, ${date.getFullYear()}`,
+              source: item.source.name,
+              link: item.url,
+              image: item.urlToImage,
+            });
+          });
+          setNewsCardList(newArray);
+        })
+        .catch((err) => {
+          setIsError(true);
+        });
+    }
+  }
   return (
     <div className="App">
       <Switch>
@@ -88,6 +135,13 @@ function App() {
             onCardButtonClick={onCardButtonClick}
             handleLoginClick={handleLoginClick}
             isPopupOpen={isPopupOpen}
+            handleCearchClick={handleCearchClick}
+            newsCardList={newsCardList}
+            isLoading={isLoading}
+            isError={isError}
+            isNotFound={isNotFound}
+            isEmptySearchInput={isEmptySearchInput}
+            setIsEmptySearchInput={setIsEmptySearchInput}
           />
         </Route>
         <Route path="/saved-news">

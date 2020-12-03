@@ -6,8 +6,14 @@ function NewCard({ card, onCardButtonClick, loggedIn }) {
     onCardButtonClick(card);
   }
   return (
-    <div className="new-card" id={card._id}>
-      <img className="new-card__image" alt="Иллюстрация" src={card.image}></img>
+    <a
+      className="new-card"
+      id={card._id}
+      href={card.link}
+      target="_blank"
+      rel="noreferrer"
+    >
+      <img className="new-card__image" alt="Иллюстрация" src={card.image}/>
       <p className="new-card__date">{card.date}</p>
       <h3 className="new-card__title">{card.title}</h3>
       <p className="new-card__text">{card.text}</p>
@@ -28,7 +34,7 @@ function NewCard({ card, onCardButtonClick, loggedIn }) {
       {window.location.pathname === "/saved-news" && (
         <p className="new-card__key">{card.keys[0]}</p>
       )}
-    </div>
+    </a>
   );
 }
 export default NewCard;

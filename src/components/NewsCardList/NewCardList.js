@@ -3,6 +3,11 @@ import "./NewCardList.css";
 import NewCard from "../NewsCard/NewCard.js";
 //---------------Компонент возвращает разметку секции с карточками------------------------------
 function NewCardList({ onCardButtonClick, loggedIn, cards }) {
+  const [countOfCards, setCountOfCards] = React.useState(3);
+  function handleButtonClick() {
+    setCountOfCards(countOfCards + 3);
+  }
+  React.useEffect(() => {setCountOfCards(3)},[cards]);
   return (
     <section className="new-card-list">
       <h3
@@ -14,22 +19,26 @@ function NewCardList({ onCardButtonClick, loggedIn, cards }) {
       </h3>
       <div className="new-card-list__card-grid">
         {cards &&
-          cards.map((item) => (
-            <NewCard
-              card={item}
-              key={item._id}
-              onCardButtonClick={onCardButtonClick}
-              loggedIn={loggedIn}
-            />
-          ))}
+          cards.map(
+            (item, i) =>
+              i < countOfCards && (
+                <NewCard
+                  card={item}
+                  key={i}
+                  onCardButtonClick={onCardButtonClick}
+                  loggedIn={loggedIn}
+                />
+              )
+          )}
       </div>
-      <button
+      {countOfCards<cards.length&&<button
         className={`new-card-list-button ${
           window.location.pathname === "/" && "new-card-list__button_visible"
         }`}
+        onClick={handleButtonClick}
       >
         Показать еще
-      </button>
+      </button>}
     </section>
   );
 }
