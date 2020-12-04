@@ -1,18 +1,49 @@
 import React from "react";
 import "./SavedNewsHeader.css";
 //---------------Компонент возвращает разметку заголовка страницы с сохраненными новостями------------------------------
-function SavedNewsHeader() {
+function SavedNewsHeader({ userName, savedNewsCardList }) {
+  function declensionOfWords(number, textList) {
+    const cases = [2, 0, 1, 1, 1, 2];
+    return textList[
+      number % 100 > 4 && number % 100 < 20
+        ? 2
+        : cases[number % 10 < 5 ? number % 10 : 5]
+    ];
+  }
   return (
     <div className="saved-news-header">
       <h1 className="saved-news-header__title">Сохранённые статьи</h1>
       <h3 className="saved-news-header__subtitle">
-        Грета, у вас 5 сохранённых статей
+        {userName}, у вас {savedNewsCardList.length}{" "}
+        {declensionOfWords(savedNewsCardList.length, [
+          "сохранённая статья",
+          "сохранённые статьи",
+          "сохранённых статей",
+        ])}
       </h3>
-      <p className="saved-news-header__keys">
-        По ключевым словам:{" "}
-        <span className="saved-news-header__keys_bold">Природа, Тайга</span> и{" "}
-        <span className="saved-news-header__keys_bold">2-м другим</span>
-      </p>
+      {savedNewsCardList.length > 0 && (
+        <p className="saved-news-header__keys">
+          {savedNewsCardList.length > 1
+            ? "По ключевым словам: "
+            : "По ключевому слову: "}
+          <span className="saved-news-header__keys_bold">
+            {savedNewsCardList[0].keyword}
+            {savedNewsCardList.length > 1 &&
+              `, ${savedNewsCardList[1].keyword}`}
+          </span>
+          {savedNewsCardList.length > 2 && " и "}
+          {savedNewsCardList.length > 2 && (
+            <span className="saved-news-header__keys_bold">
+              {savedNewsCardList.length - 2}
+              {declensionOfWords(savedNewsCardList.length - 2, [
+                "-й другой",
+                "-м другим",
+                "-и другим",
+              ])}
+            </span>
+          )}
+        </p>
+      )}
     </div>
   );
 }

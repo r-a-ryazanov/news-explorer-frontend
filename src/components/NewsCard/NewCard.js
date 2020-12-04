@@ -3,7 +3,6 @@ import "./NewCard.css";
 //---------------Компонент возвращает разметку новостной карточки------------------------------
 function NewCard({ card, onCardButtonClick, loggedIn, onCardClick, id }) {
   if (!card._id) card._id = id;
-
   function handleButtonClick() {
     onCardButtonClick(card);
   }
@@ -36,7 +35,7 @@ function NewCard({ card, onCardButtonClick, loggedIn, onCardClick, id }) {
         <p className="new-card__tip">Убрать из сохранённых</p>
       )}
       {window.location.pathname === "/saved-news" && (
-        <p className="new-card__key">{card.keys[0]}</p>
+        <p className="new-card__key">{card.keyword}</p>
       )}
     </div>
   );

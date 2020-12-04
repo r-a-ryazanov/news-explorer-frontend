@@ -7,6 +7,7 @@ import About from "../About/About.js";
 import Preloader from "../Preloader/Preloader.js";
 import Tips from "../Tips/Tips.js";
 import backgroundImage from "../../images/georgia-de-lotz--UsJoNxLaNo-unsplash.png";
+import CurrentUserContext from "../../contexts/CurrentUserContext.js";
 //---------------Компонент возвращает разметку главной страницы------------------------------
 function Main({
   loggedIn,
@@ -22,7 +23,10 @@ function Main({
   isEmptySearchInput,
   setIsEmptySearchInput,
   onCardClick,
+  setCountOfCards,
+  countOfCards
 }) {
+  const currentUser = React.useContext(CurrentUserContext);
   const [backgroundHeight, setbackgroundHeight] = React.useState("auto");
   function setBackgroundHeight() {
     setbackgroundHeight(
@@ -51,6 +55,7 @@ function Main({
         handleLogOutButton={handleLogOutUser}
         loggedIn={loggedIn}
         isPopupOpen={isPopupOpen}
+        userName={currentUser?currentUser.name:""}
       />
       <SearchForm
         handleSearchClick={handleCearchClick}
@@ -66,6 +71,8 @@ function Main({
           loggedIn={loggedIn}
           cards={newsCardList}
           onCardClick={onCardClick}
+          countOfCards={countOfCards}
+          setCountOfCards={setCountOfCards}
         />
       )}
       <About />

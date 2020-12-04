@@ -9,6 +9,13 @@ import SignInPopup from "../SignInPopup/SignInPopup.js";
 import SuccessPopup from "../SuccessPopup/SuccessPopup.js";
 import newsApi from "../../utils/NewsApi.js";
 import mainApi from "../../utils/MainApi.js";
+import ProtectedRoute from "../ProtectedRoute/ProtectedRoute.js";
+import CurrentUserContext from "../../contexts/CurrentUserContext";
+function handleError(err) {
+  if (err.message.search("celebrate") !== -1)
+    return err.validation.body.message;
+  return err.message;
+}
 //---------------Компонент возвращает разметку всего ресурса------------------------------
 function App() {
   const [loggedIn, setloggedIn] = React.useState(false);
@@ -25,12 +32,35 @@ function App() {
   const [isNewsApiError, setIsNewsApiError] = React.useState(false);
   const [isNewsApiNotFound, setIsNewsApiNotFound] = React.useState(false);
   const [isEmptySearchInput, setIsEmptySearchInput] = React.useState(false);
+  const [currentUser, setCurrentUser] = React.useState();
+  const [countOfCards, setCountOfCards] = React.useState(3);
+  React.useEffect(() => {
+    if (localStorage.getItem("newsCardList") != null) {
+      setNewsCardList(JSON.parse(localStorage.getItem("newsCardList")));
+    }
+    if (localStorage.getItem("token") != null) {
+      Promise.all([
+        mainApi.getUserData(localStorage.getItem("token")),
+        mainApi.getSavedCards(localStorage.getItem("token")),
+      ])
+        .then((results) => {
+          if (results) {
+            setCurrentUser(results[0]);
+            localStorage.setItem("currentUser", results[0]);
+            setSavedNewsCardList(results[1]);
+            setloggedIn(true);
+          }
+        })
+        .catch((err) => {
+          console.log(err);
+          /*err.then((res) => {
+            setMainApiError(handleError(res));
+          });*/
+        });
+    }
+  }, []);
   //---------------Функцмя закрытия всех всплывающих окон------------------------------
-  function handleError(err) {
-    if (err.message.search("celebrate") !== -1)
-      return err.validation.body.message;
-    return err.message;
-  }
+  
   function closeAllPopup() {
     setIsSignUpPopupOpen(false);
     setIsSignInPopupOpen(false);
@@ -95,30 +125,137 @@ function App() {
     setIsAuthLoading(true);
     mainApi
       .loginUser(loginData)
-      .then(() => {
-        setloggedIn(true);
-        closeAllPopup();
-        setIsAuthLoading(false);
+      .then((result) => {
+        if (result) {
+          localStorage.setItem("token", result.token);
+          Promise.all([
+            mainApi.getUserData(result.token),
+            mainApi.getSavedCards(result.token),
+          ])
+            .then((results) => {
+              if (results) {
+                setCurrentUser(results[0]);
+                localStorage.setItem("currentUser", results[0]);
+                setSavedNewsCardList(results[1]);
+                setloggedIn(true);
+                closeAllPopup();
+                setIsAuthLoading(false);
+              }
+            })
+            .catch((err) => {
+              setMainApiError(handleError(err));
+              setIsAuthLoading(false);
+            });
+        }
       })
       .catch((err) => {
-        err.then((res) => {
-          setMainApiError(handleError(res));
-          setIsAuthLoading(false);
-        });
+        console.log(err);
+        err.then((error) =>{
+          console.log(handleError(error));
+          setMainApiError(handleError(error));
+        setIsAuthLoading(false);
+        })
+        
       });
   }
   //---------------Функция выхода пользователя------------------------------
   function handleLogOutUser() {
+    localStorage.removeItem("token");
+    localStorage.removeItem("currentUser");
+    setSavedNewsCardList([]);
     setloggedIn(false);
     history.push("/");
   }
   //---------------Функция сохранения карточки------------------------------
   function onCardButtonClick(card) {
     if (window.location.pathname === "/" && loggedIn) {
-      document
-        .getElementById(card._id)
-        .querySelector(".new-card__button")
-        .classList.toggle("new-card__button_marked");
+      if (!card.isSaved) {
+        mainApi
+          .addCard(card, localStorage.getItem("token"))
+          .then((res) => {
+            if (res) {
+              const newArray = [];
+              newsCardList.forEach((item, i) => {
+                newArray[i] = { ...item };
+                if (newArray[i].link === card.link) newArray[i].isSaved = true;
+              });
+              setNewsCardList(newArray);
+              setSavedNewsCardList([...savedNewsCardList, res]);
+              localStorage.setItem("newsCardList", JSON.stringify(newArray));
+            }
+          })
+          .catch((err) => {
+            err.then((res) => {
+              console.log(handleError(res));
+            });
+          });
+      } else {
+        let id;
+        savedNewsCardList.forEach((item) => {
+          if (item.link === card.link) id = item._id;
+        });
+        mainApi
+          .deleteCard(id, localStorage.getItem("token"))
+          .then((res) => {
+            if (res) {
+              const newArray = [];
+              newsCardList.forEach((item, i) => {
+                newArray[i] = { ...item };
+                if (newArray[i].link === card.link) newArray[i].isSaved = false;
+              });
+              setNewsCardList(newArray);
+              localStorage.setItem("newsCardList", JSON.stringify(newArray));
+              mainApi
+                .getSavedCards(localStorage.getItem("token"))
+                .then((res) => {
+                  if (res) {
+                    setSavedNewsCardList(res);
+                  }
+                })
+                .catch((err) => {
+                  err.then((res) => {
+                    console.log(handleError(res));
+                  });
+                });
+            }
+          })
+          .catch((err) => {
+            err.then((res) => {
+              console.log(handleError(res));
+            });
+          });
+      }
+    } else if (window.location.pathname === "/saved-news") {
+      mainApi
+        .deleteCard(card._id, localStorage.getItem("token"))
+        .then((res) => {
+          if (res) {
+            const newArray = [];
+            newsCardList.forEach((item, i) => {
+              newArray[i] = { ...item };
+              if (newArray[i].link === card.link) newArray[i].isSaved = false;
+            });
+            setNewsCardList(newArray);
+            localStorage.setItem("newsCardList", JSON.stringify(newArray));
+            mainApi
+              .getSavedCards(localStorage.getItem("token"))
+              .then((res) => {
+                if (res) {
+                  setSavedNewsCardList(res);
+                }
+              })
+              .catch((err) => {
+                err.then((res) => {
+                  console.log(handleError(res));
+                });
+              });
+          }
+        })
+        .catch((err) => {
+          err.then((res) => {
+            console.log(handleError(res));
+          });
+        });
     }
   }
   function hasSavedNews(link) {
@@ -161,6 +298,7 @@ function App() {
             });
           });
           setNewsCardList(newArray);
+          localStorage.setItem("newsCardList", JSON.stringify(newArray));
         })
         .catch(() => {
           setIsNewsApiError(true);
@@ -171,58 +309,63 @@ function App() {
     window.open(link, "_blank");
   }
   return (
-    <div className="App">
-      <Switch>
-        <Route exact path="/">
-          <Main
+    <CurrentUserContext.Provider value={currentUser}>
+      <div className="App">
+        <Switch>
+          <ProtectedRoute
+            path="/saved-news"
+            component={SavedNews}
             loggedIn={loggedIn}
             handleLogOutUser={handleLogOutUser}
             onCardButtonClick={onCardButtonClick}
             handleLoginClick={handleLoginClick}
             isPopupOpen={isPopupOpen}
-            handleCearchClick={handleCearchClick}
-            newsCardList={newsCardList}
-            isLoading={isLoading}
-            isError={isNewsApiError}
-            isNotFound={isNewsApiNotFound}
-            isEmptySearchInput={isEmptySearchInput}
-            setIsEmptySearchInput={setIsEmptySearchInput}
-            onCardClick={onCardClick}
+            savedNewsCardList={savedNewsCardList}
           />
-        </Route>
-        <Route path="/saved-news">
-          <SavedNews
-            loggedIn={loggedIn}
-            handleLogOutUser={handleLogOutUser}
-            onCardButtonClick={onCardButtonClick}
-            handleLoginClick={handleLoginClick}
-            isPopupOpen={isPopupOpen}
-          />
-        </Route>
-      </Switch>
-      <Footer />
-      <SignUpPopup
-        isOpen={isSignUpPopupOpen}
-        handlesubscriptButton={handleLoginClick}
-        onSignUp={handleRegisterUser}
-        handleCloseButton={closeAllPopup}
-        mainApiError={mainApiError}
-        isAuthLoading={isAuthLoading}
-      />
-      <SignInPopup
-        isOpen={isSignInPopupOpen}
-        handlesubscriptButton={handleAuthClick}
-        onSignIn={handleSignInUser}
-        handleCloseButton={closeAllPopup}
-        mainApiError={mainApiError}
-      />
-      <SuccessPopup
-        isOpen={isSuccessPopupOpen}
-        handlesubscriptButton={handleLoginClick}
-        handleCloseButton={closeAllPopup}
-        isAuthLoading={isAuthLoading}
-      />
-    </div>
+          <Route exact path="/">
+            <Main
+              loggedIn={loggedIn}
+              handleLogOutUser={handleLogOutUser}
+              onCardButtonClick={onCardButtonClick}
+              handleLoginClick={handleLoginClick}
+              isPopupOpen={isPopupOpen}
+              handleCearchClick={handleCearchClick}
+              newsCardList={newsCardList}
+              isLoading={isLoading}
+              isError={isNewsApiError}
+              isNotFound={isNewsApiNotFound}
+              isEmptySearchInput={isEmptySearchInput}
+              setIsEmptySearchInput={setIsEmptySearchInput}
+              onCardClick={onCardClick}
+              countOfCards={countOfCards}
+              setCountOfCards={setCountOfCards}
+            />
+          </Route>
+        </Switch>
+        <Footer />
+        <SignUpPopup
+          isOpen={isSignUpPopupOpen}
+          handlesubscriptButton={handleLoginClick}
+          onSignUp={handleRegisterUser}
+          handleCloseButton={closeAllPopup}
+          mainApiError={mainApiError}
+          isAuthLoading={isAuthLoading}
+        />
+        <SignInPopup
+          isOpen={isSignInPopupOpen}
+          handlesubscriptButton={handleAuthClick}
+          onSignIn={handleSignInUser}
+          handleCloseButton={closeAllPopup}
+          mainApiError={mainApiError}
+        />
+        <SuccessPopup
+          isOpen={isSuccessPopupOpen}
+          handlesubscriptButton={handleLoginClick}
+          handleCloseButton={closeAllPopup}
+          isAuthLoading={isAuthLoading}
+        />
+      </div>
+    </CurrentUserContext.Provider>
   );
 }
 

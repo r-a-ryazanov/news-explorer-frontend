@@ -8,6 +8,7 @@ function Header({
   loggedIn,
   handleLogOutButton,
   isPopupOpen,
+  userName,
 }) {
   const [onMenu, setOnMenu] = React.useState(false);
   //---------------Функция-обработчик нажатия на кнопку меню------------------------------
@@ -50,6 +51,7 @@ function Header({
         handleLogOutButton={handleExitButton}
         loggedIn={loggedIn}
         onMenu={onMenu}
+        userName={userName}
       />
     </header>
   );

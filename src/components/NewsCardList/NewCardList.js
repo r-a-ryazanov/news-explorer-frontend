@@ -2,14 +2,11 @@ import React from "react";
 import "./NewCardList.css";
 import NewCard from "../NewsCard/NewCard.js";
 //---------------Компонент возвращает разметку секции с карточками------------------------------
-function NewCardList({ onCardButtonClick, loggedIn, cards, onCardClick }) {
-  const [countOfCards, setCountOfCards] = React.useState(3);
+function NewCardList({ onCardButtonClick, loggedIn, cards, onCardClick,countOfCards,setCountOfCards }) {
+  
   function handleButtonClick() {
     setCountOfCards(countOfCards + 3);
   }
-  React.useEffect(() => {
-    setCountOfCards(3);
-  }, [cards]);
   return (
     <section className="new-card-list">
       <h3

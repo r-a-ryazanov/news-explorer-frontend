@@ -7,6 +7,7 @@ function Navigation({
   handleLogOutButton,
   loggedIn,
   onMenu,
+  userName,
 }) {
   //---------------Функция-обработчик нажатия на кнопку авторизации/выхода------------------------------
   function handleButtonClick() {
@@ -29,18 +30,21 @@ function Navigation({
       >
         Главная
       </NavLink>
-      <NavLink
-        exact
-        to="/saved-news"
-        className={`navigation__link ${
-          window.location.pathname === "/saved-news" &&
-          "navigation__link_active"
-        } ${
-          window.location.pathname === "/saved-news" && "navigation__link_dark"
-        }`}
-      >
-        Сохраненные статьи
-      </NavLink>
+      {loggedIn && (
+        <NavLink
+          exact
+          to="/saved-news"
+          className={`navigation__link ${
+            window.location.pathname === "/saved-news" &&
+            "navigation__link_active"
+          } ${
+            window.location.pathname === "/saved-news" &&
+            "navigation__link_dark"
+          }`}
+        >
+          Сохраненные статьи
+        </NavLink>
+      )}
       <div
         className={`navigation__auth-button ${
           window.location.pathname === "/saved-news" &&
@@ -48,7 +52,7 @@ function Navigation({
         }`}
         onClick={handleButtonClick}
       >
-        {loggedIn ? "Грета" : "Авторизация"}
+        {loggedIn ? userName : "Авторизация"}
         <div
           className={`navigation__out-logo ${
             window.location.pathname === "/saved-news" &&

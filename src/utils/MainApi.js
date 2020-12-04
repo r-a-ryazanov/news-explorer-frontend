@@ -2,94 +2,102 @@ class MainApi {
   constructor(options) {
     this._options = options;
   }
-  
+  _handleError(err) {
+    if (err.message.search("celebrate") !== -1)
+      return err.validation.body.message;
+    return err.message;
+  }
+  _handleResponse = res => {
+    if (res.ok) {
+      return res.json();
+    }
+    return Promise.reject(res.json());
+    /*res.json()
+    .then((err) => {
+      return Promise.reject( this._handleError(err));
+    });*/
+  };
   //-------Функция загрузки карточек с сервера
-  getInitialCards(token) {
-    return fetch(`${this._options.baseUrl}/cards`, {
-      headers: {"Content-Type": "application/json",
-      "Authorization" : `Bearer ${token}`}  
-    })
-      .then(this._handleResponse)
-      .catch((err) => {
-        console.log(err);
-      });
+  getSavedCards(token) {
+    return fetch(`${this._options.baseUrl}/articles`, {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    }).then(this._handleResponse);
   }
 
- 
   //-----Функция удаления карточки
   deleteCard(cardId, token) {
-    return fetch(`${this._options.baseUrl}/cards/${cardId}`, {
-      method: 'DELETE',
-      headers: {"Content-Type": "application/json",
-      "Authorization" : `Bearer ${token}`}
-    })
-      .then(this._handleResponse)
-      .catch((err) => {
-        console.log(err);
-      });
-  }
-   //--------Функция добавления карточки
-   addCard(inputData, token) {
-    return fetch(`${this._options.baseUrl}/cards`, {
-      method: 'POST',
-      headers: {"Content-Type": "application/json",
-      "Authorization" : `Bearer ${token}`},
-      body: JSON.stringify({
-        name: inputData.name,
-        link: inputData.link
+    return fetch(`${this._options.baseUrl}/articles/${cardId}`, {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
       })
-    })
-      .then(this.handleResponse)
-      .catch((err) => {
-        console.log(err);
-      });
+      .then(this._handleResponse);
+      
+  }
+  //--------Функция добавления карточки
+  addCard(inputData, token) {
+    return fetch(`${this._options.baseUrl}/articles`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          keyword: inputData.keyword,
+          title: inputData.title,
+          text: inputData.text,
+          date: inputData.date,
+          source: inputData.source,
+          link: inputData.link,
+          image: inputData.image
+        }),
+      })
+      .then(this._handleResponse);
   }
   //--------Функция регистрации пользователя
-  registerUser(registerData){
+  registerUser(registerData) {
     return fetch(`${this._options.baseUrl}/signup`, {
-      method: 'POST',
-      headers: {"Content-Type": "application/json"} ,
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
       body: JSON.stringify({
-        "password": registerData.password,
-        "email": registerData.email,
-        "name":  registerData.name
-      })
-    })
-    .then((res) => {
-      if (res.ok) return res.json();
-      return Promise.reject(res.json());
-    });
+        password: registerData.password,
+        email: registerData.email,
+        name: registerData.name,
+      }),
+    }).then(this._handleResponse);
   }
   //--------Функция авторизации пользователя
-  loginUser(loginData){
+  loginUser(loginData) {
     return fetch(`${this._options.baseUrl}/signin`, {
-      method: 'POST',
-      headers: {"Content-Type": "application/json"} ,
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
       body: JSON.stringify({
-        "password": loginData.password,
-        "email": loginData.email 
-      })
-    })
-    .then((res) => {
-      if (res.ok) return res.json();
-      return Promise.reject(res.json());
-    });
+        password: loginData.password,
+        email: loginData.email,
+      }),
+    }).then(this._handleResponse);
   }
-  //--------Функция проверки токена
-  verifyToken(token){
+  //---------------Функция обновления данных пользователя
+  getUserData(token) {
     return fetch(`${this._options.baseUrl}/users/me`, {
-      method: 'GET',
-      headers: {"Content-Type": "application/json",
-      "Authorization" : `Bearer ${token}`} 
-    })
-    .then((res) => {
-      if (res.ok) return res.json();
-      return Promise.reject(res.status);
-    });
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    }).then(this._handleResponse);
   }
 }
 const mainApi = new MainApi({
-  baseUrl: 'https://api.news-explorer.students.nomoreparties.co',
-  
+  baseUrl: "http://localhost:3001",
 });
 export default mainApi;
