@@ -11,11 +11,7 @@ import newsApi from "../../utils/NewsApi.js";
 import mainApi from "../../utils/MainApi.js";
 import ProtectedRoute from "../ProtectedRoute/ProtectedRoute.js";
 import CurrentUserContext from "../../contexts/CurrentUserContext";
-function handleError(err) {
-  if (err.message.search("celebrate") !== -1)
-    return err.validation.body.message;
-  return err.message;
-}
+
 //---------------Компонент возвращает разметку всего ресурса------------------------------
 function App() {
   const [loggedIn, setloggedIn] = React.useState(false);
@@ -53,14 +49,11 @@ function App() {
         })
         .catch((err) => {
           console.log(err);
-          /*err.then((res) => {
-            setMainApiError(handleError(res));
-          });*/
         });
     }
   }, []);
   //---------------Функцмя закрытия всех всплывающих окон------------------------------
-  
+
   function closeAllPopup() {
     setIsSignUpPopupOpen(false);
     setIsSignInPopupOpen(false);
@@ -113,10 +106,8 @@ function App() {
         setIsAuthLoading(false);
       })
       .catch((err) => {
-        err.then((res) => {
-          setMainApiError(handleError(res));
-          setIsAuthLoading(false);
-        });
+        setMainApiError(err);
+        setIsAuthLoading(false);
       });
   }
   //---------------Функция авторизации пользователя------------------------------
@@ -137,25 +128,40 @@ function App() {
                 setCurrentUser(results[0]);
                 localStorage.setItem("currentUser", results[0]);
                 setSavedNewsCardList(results[1]);
+                const newArray = [];
+                newsCardList.forEach((item, i) => {
+                  let isSaved = false;
+                  results[1].forEach((card) => {
+                    if (item.link === card.link) {
+                      isSaved = true;
+                    }
+                  });
+                  newArray.push({
+                    keyword: item.keyword,
+                    title: item.title,
+                    text: item.text,
+                    date: item.date,
+                    source: item.source,
+                    link: item.link,
+                    image: item.image,
+                    isSaved: isSaved,
+                  });
+                });
+                setNewsCardList(newArray);
                 setloggedIn(true);
                 closeAllPopup();
                 setIsAuthLoading(false);
               }
             })
             .catch((err) => {
-              setMainApiError(handleError(err));
+              setMainApiError(err);
               setIsAuthLoading(false);
             });
         }
       })
       .catch((err) => {
-        console.log(err);
-        err.then((error) =>{
-          console.log(handleError(error));
-          setMainApiError(handleError(error));
+        setMainApiError(err);
         setIsAuthLoading(false);
-        })
-        
       });
   }
   //---------------Функция выхода пользователя------------------------------
@@ -166,7 +172,7 @@ function App() {
     setloggedIn(false);
     history.push("/");
   }
-  //---------------Функция сохранения карточки------------------------------
+  //---------------Функция сохранения/удаления карточки------------------------------
   function onCardButtonClick(card) {
     if (window.location.pathname === "/" && loggedIn) {
       if (!card.isSaved) {
@@ -185,9 +191,7 @@ function App() {
             }
           })
           .catch((err) => {
-            err.then((res) => {
-              console.log(handleError(res));
-            });
+            console.log(err);
           });
       } else {
         let id;
@@ -213,16 +217,12 @@ function App() {
                   }
                 })
                 .catch((err) => {
-                  err.then((res) => {
-                    console.log(handleError(res));
-                  });
+                  console.log(err);
                 });
             }
           })
           .catch((err) => {
-            err.then((res) => {
-              console.log(handleError(res));
-            });
+            console.log(err);
           });
       }
     } else if (window.location.pathname === "/saved-news") {
@@ -245,16 +245,12 @@ function App() {
                 }
               })
               .catch((err) => {
-                err.then((res) => {
-                  console.log(handleError(res));
-                });
+                console.log(err);
               });
           }
         })
         .catch((err) => {
-          err.then((res) => {
-            console.log(handleError(res));
-          });
+          console.log(err);
         });
     }
   }

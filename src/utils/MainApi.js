@@ -11,11 +11,10 @@ class MainApi {
     if (res.ok) {
       return res.json();
     }
-    return Promise.reject(res.json());
-    /*res.json()
-    .then((err) => {
-      return Promise.reject( this._handleError(err));
-    });*/
+    return res.json()
+      .then((err) => {
+        return Promise.reject(this._handleError(err));
+      });
   };
   //-------Функция загрузки карточек с сервера
   getSavedCards(token) {
@@ -37,7 +36,7 @@ class MainApi {
         },
       })
       .then(this._handleResponse);
-      
+
   }
   //--------Функция добавления карточки
   addCard(inputData, token) {
@@ -98,6 +97,6 @@ class MainApi {
   }
 }
 const mainApi = new MainApi({
-  baseUrl: "http://localhost:3001",
+  baseUrl: "https://api.news-explorer.students.nomoreparties.co",
 });
 export default mainApi;
