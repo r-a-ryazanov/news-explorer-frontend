@@ -1,13 +1,13 @@
 .main {
-  background-image: url("../../images/georgia-de-lotz--UsJoNxLaNo-unsplash.png");
-  background-size: 100% auto;
-  background-repeat: no-repeat;
   position: relative;
 }
 
-@media screen and (max-width:1120px) {
-  .main {
-    background-size: auto 576px;
-    background-position: center top;
-  }
+.main__background-image {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  z-index: -1;
+  object-fit: cover;
+  position: center;
 }
