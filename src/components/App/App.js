@@ -1,5 +1,5 @@
 import React from "react";
-import { Route, Switch, useHistory } from "react-router-dom";
+import { Route, Switch, useHistory, useLocation } from "react-router-dom";
 import "./App.css";
 import Main from "../Main/Main.js";
 import SavedNews from "../SavedNews/SavedNews.js";
@@ -16,6 +16,7 @@ import CurrentUserContext from "../../contexts/CurrentUserContext";
 function App() {
   const [loggedIn, setloggedIn] = React.useState(false);
   const history = useHistory();
+  const location = useLocation();
   const [isSignUpPopupOpen, setIsSignUpPopupOpen] = React.useState(false);
   const [isSignInPopupOpen, setIsSignInPopupOpen] = React.useState(false);
   const [isSuccessPopupOpen, setIsSuccessPopupOpen] = React.useState(false);
@@ -41,16 +42,19 @@ function App() {
       ])
         .then((results) => {
           if (results) {
+            setloggedIn(true);
+            if (location.pathname === "/saved-news")
+              history.push("/saved-news");
             setCurrentUser(results[0]);
             localStorage.setItem("currentUser", results[0]);
             setSavedNewsCardList(results[1]);
-            setloggedIn(true);
           }
         })
         .catch((err) => {
           console.log(err);
         });
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
   //---------------Функцмя закрытия всех всплывающих окон------------------------------
 
@@ -106,7 +110,11 @@ function App() {
         setIsAuthLoading(false);
       })
       .catch((err) => {
-        setMainApiError(err);
+        if (typeof err === "string") {
+          setMainApiError(err);
+        } else {
+          setMainApiError("Реурс не найден. Попробуйте позже");
+        }
         setIsAuthLoading(false);
       });
   }
@@ -129,7 +137,7 @@ function App() {
                 localStorage.setItem("currentUser", results[0]);
                 setSavedNewsCardList(results[1]);
                 const newArray = [];
-                newsCardList.forEach((item, i) => {
+                newsCardList.forEach((item) => {
                   let isSaved = false;
                   results[1].forEach((card) => {
                     if (item.link === card.link) {
@@ -160,12 +168,30 @@ function App() {
         }
       })
       .catch((err) => {
-        setMainApiError(err);
+        if (typeof err === "string") {
+          setMainApiError(err);
+        } else {
+          setMainApiError("Реурс не найден. Попробуйте позже");
+        }
         setIsAuthLoading(false);
       });
   }
   //---------------Функция выхода пользователя------------------------------
   function handleLogOutUser() {
+    const newArray = [];
+    newsCardList.forEach((item) => {
+      newArray.push({
+        keyword: item.keyword,
+        title: item.title,
+        text: item.text,
+        date: item.date,
+        source: item.source,
+        link: item.link,
+        image: item.image,
+        isSaved: false,
+      });
+    });
+    setNewsCardList(newArray);
     localStorage.removeItem("token");
     localStorage.removeItem("currentUser");
     setSavedNewsCardList([]);
@@ -174,32 +200,63 @@ function App() {
   }
   //---------------Функция сохранения/удаления карточки------------------------------
   function onCardButtonClick(card) {
-    if (window.location.pathname === "/" && loggedIn) {
-      if (!card.isSaved) {
-        mainApi
-          .addCard(card, localStorage.getItem("token"))
-          .then((res) => {
-            if (res) {
-              const newArray = [];
-              newsCardList.forEach((item, i) => {
-                newArray[i] = { ...item };
-                if (newArray[i].link === card.link) newArray[i].isSaved = true;
-              });
-              setNewsCardList(newArray);
-              setSavedNewsCardList([...savedNewsCardList, res]);
-              localStorage.setItem("newsCardList", JSON.stringify(newArray));
-            }
-          })
-          .catch((err) => {
-            console.log(err);
+    if (loggedIn) {
+      if (window.location.pathname === "/") {
+        if (!card.isSaved) {
+          mainApi
+            .addCard(card, localStorage.getItem("token"))
+            .then((res) => {
+              if (res) {
+                const newArray = [];
+                newsCardList.forEach((item, i) => {
+                  newArray[i] = { ...item };
+                  if (newArray[i].link === card.link)
+                    newArray[i].isSaved = true;
+                });
+                setNewsCardList(newArray);
+                setSavedNewsCardList([...savedNewsCardList, res]);
+                localStorage.setItem("newsCardList", JSON.stringify(newArray));
+              }
+            })
+            .catch((err) => {
+              console.log(err);
+            });
+        } else {
+          let id;
+          savedNewsCardList.forEach((item) => {
+            if (item.link === card.link) id = item._id;
           });
+          mainApi
+            .deleteCard(id, localStorage.getItem("token"))
+            .then((res) => {
+              if (res) {
+                const newArray = [];
+                newsCardList.forEach((item, i) => {
+                  newArray[i] = { ...item };
+                  if (newArray[i].link === card.link)
+                    newArray[i].isSaved = false;
+                });
+                setNewsCardList(newArray);
+                localStorage.setItem("newsCardList", JSON.stringify(newArray));
+                mainApi
+                  .getSavedCards(localStorage.getItem("token"))
+                  .then((res) => {
+                    if (res) {
+                      setSavedNewsCardList(res);
+                    }
+                  })
+                  .catch((err) => {
+                    console.log(err);
+                  });
+              }
+            })
+            .catch((err) => {
+              console.log(err);
+            });
+        }
       } else {
-        let id;
-        savedNewsCardList.forEach((item) => {
-          if (item.link === card.link) id = item._id;
-        });
         mainApi
-          .deleteCard(id, localStorage.getItem("token"))
+          .deleteCard(card._id, localStorage.getItem("token"))
           .then((res) => {
             if (res) {
               const newArray = [];
@@ -225,34 +282,7 @@ function App() {
             console.log(err);
           });
       }
-    } else if (window.location.pathname === "/saved-news") {
-      mainApi
-        .deleteCard(card._id, localStorage.getItem("token"))
-        .then((res) => {
-          if (res) {
-            const newArray = [];
-            newsCardList.forEach((item, i) => {
-              newArray[i] = { ...item };
-              if (newArray[i].link === card.link) newArray[i].isSaved = false;
-            });
-            setNewsCardList(newArray);
-            localStorage.setItem("newsCardList", JSON.stringify(newArray));
-            mainApi
-              .getSavedCards(localStorage.getItem("token"))
-              .then((res) => {
-                if (res) {
-                  setSavedNewsCardList(res);
-                }
-              })
-              .catch((err) => {
-                console.log(err);
-              });
-          }
-        })
-        .catch((err) => {
-          console.log(err);
-        });
-    }
+    } else handleLoginClick();
   }
   function hasSavedNews(link) {
     return savedNewsCardList.some((item) => {
@@ -304,6 +334,7 @@ function App() {
   function onCardClick(link) {
     window.open(link, "_blank");
   }
+
   return (
     <CurrentUserContext.Provider value={currentUser}>
       <div className="App">
@@ -317,6 +348,8 @@ function App() {
             handleLoginClick={handleLoginClick}
             isPopupOpen={isPopupOpen}
             savedNewsCardList={savedNewsCardList}
+            handleCearchClick={handleCearchClick}
+            newsCardList={newsCardList}
           />
           <Route exact path="/">
             <Main

@@ -24,7 +24,7 @@ function Main({
   setIsEmptySearchInput,
   onCardClick,
   setCountOfCards,
-  countOfCards
+  countOfCards,
 }) {
   const currentUser = React.useContext(CurrentUserContext);
   const [backgroundHeight, setbackgroundHeight] = React.useState("auto");
@@ -55,7 +55,7 @@ function Main({
         handleLogOutButton={handleLogOutUser}
         loggedIn={loggedIn}
         isPopupOpen={isPopupOpen}
-        userName={currentUser?currentUser.name:""}
+        userName={currentUser ? currentUser.name : ""}
       />
       <SearchForm
         handleSearchClick={handleCearchClick}

@@ -10,6 +10,19 @@ function SavedNewsHeader({ userName, savedNewsCardList }) {
         : cases[number % 10 < 5 ? number % 10 : 5]
     ];
   }
+  function keywordsList() {
+    const keywordsArray = [];
+    savedNewsCardList.forEach((item, i) => {
+      if (
+        !keywordsArray.some((keyword) => {
+          return item.keyword === keyword;
+        })
+      )
+        keywordsArray.push(item.keyword);
+    });
+    return keywordsArray;
+  }
+  const keywordsArray = keywordsList();
   return (
     <div className="saved-news-header">
       <h1 className="saved-news-header__title">Сохранённые статьи</h1>
@@ -21,21 +34,21 @@ function SavedNewsHeader({ userName, savedNewsCardList }) {
           "сохранённых статей",
         ])}
       </h3>
-      {savedNewsCardList.length > 0 && (
+      {keywordsArray.length > 0 && (
         <p className="saved-news-header__keys">
-          {savedNewsCardList.length > 1
+          {keywordsArray.length > 1
             ? "По ключевым словам: "
             : "По ключевому слову: "}
           <span className="saved-news-header__keys_bold">
-            {savedNewsCardList[0].keyword}
-            {savedNewsCardList.length > 1 &&
-              `, ${savedNewsCardList[1].keyword}`}
+            {keywordsArray[0]}
+            {keywordsArray.length > 1 &&
+              `, ${keywordsArray[1]}`}
           </span>
-          {savedNewsCardList.length > 2 && " и "}
-          {savedNewsCardList.length > 2 && (
+          {keywordsArray.length > 2 && " и "}
+          {keywordsArray.length > 2 && (
             <span className="saved-news-header__keys_bold">
-              {savedNewsCardList.length - 2}
-              {declensionOfWords(savedNewsCardList.length - 2, [
+              {keywordsArray.length - 2}
+              {declensionOfWords(keywordsArray.length - 2, [
                 "-й другой",
                 "-м другим",
                 "-и другим",
