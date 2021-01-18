@@ -49,7 +49,7 @@ function SavedNewsHeader({ userName, savedNewsCardList }) {
             <span className="saved-news-header__keys_bold">
               {keywordsArray.length - 2}
               {declensionOfWords(keywordsArray.length - 2, [
-                "-й другой",
+                "-му другому",
                 "-м другим",
                 "-и другим",
               ])}

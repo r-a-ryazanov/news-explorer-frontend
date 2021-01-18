@@ -97,6 +97,6 @@ class MainApi {
   }
 }
 const mainApi = new MainApi({
-  baseUrl: "https://api.news-explorer.students.nomoreparties.co",
+  baseUrl: "https://api.news-explorer.sytes.net",
 });
 export default mainApi;
